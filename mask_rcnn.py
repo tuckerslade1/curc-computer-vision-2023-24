@@ -161,7 +161,7 @@ class MaskRCNN:
             # DRAW
 
             # Draw background rectangles
-            cv2.rectangle(bgr_frame, (x, y), (x + 106, y + 82), color, -1)
+            cv2.rectangle(bgr_frame, (x, y), (x + 118, y + 87), color, -1)
 
             # Draw outline of background rectangles
             #cv2.rectangle(bgr_frame, (x, y), (x2, y2), color, 1)
@@ -177,12 +177,17 @@ class MaskRCNN:
             # cv2.putText(bgr_frame, str(x2) + ", " + str(y2), (x2 + 3, y2 + 15), 0, 0.5, (255, 255, 255), 1)
 
             # Draw object type and measurements
+
             class_name = self.classes[int(class_id)]
-            cv2.putText(bgr_frame, class_name.capitalize(), (x + 5, y + 15), 0, 0.5, (255, 255, 255), 1)
-            cv2.putText(bgr_frame, "d {} cm".format(depth_mm / 10), (x + 5, y + 30), 0, 0.5, (255, 255, 255), 1) # distance
-            cv2.putText(bgr_frame, "w {} cm".format(width_mm / 10), (x + 5, y + 45), 0, 0.5, (255, 255, 255), 1) # width
-            cv2.putText(bgr_frame, "h {} cm".format(height_mm / 10), (x + 5, y + 60), 0, 0.5, (255, 255, 255), 1) # height
-            cv2.putText(bgr_frame, "angle {}".format(object_angle), (x + 5, y + 75), 0, 0.5, (255, 255, 255), 1) # height
+            cv2.putText(bgr_frame, class_name.capitalize(), (x + 5, y + 18), 0, 0.5, (255, 255, 255), 2)
+            # d: represents measured distance to the center of object in cm
+            cv2.putText(bgr_frame, "d: {} cm".format(depth_mm / 10), (x + 5, y + 33), 0, 0.5, (255, 255, 255), 1) # distance
+            # w: represents calculated width of object in cm
+            cv2.putText(bgr_frame, "w: {} cm".format(width_mm / 10), (x + 5, y + 48), 0, 0.5, (255, 255, 255), 1) # width
+            # h: represents calculated height of object in cm
+            cv2.putText(bgr_frame, "h: {} cm".format(height_mm / 10), (x + 5, y + 63), 0, 0.5, (255, 255, 255), 1) # height
+            # ang: represents angle from center of screen to center of object in degrees
+            cv2.putText(bgr_frame, "ang: {} deg".format(object_angle), (x + 5, y + 78), 0, 0.5, (255, 255, 255), 1) # height
 
             # Marker at center of screen for testing purposes
             # cv2.rectangle(bgr_frame, (screen_centerx-1, screen_centery-1), (screen_centerx+1, screen_centery+1), (255,0,0), 1)
