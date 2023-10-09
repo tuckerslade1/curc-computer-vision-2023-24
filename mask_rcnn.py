@@ -189,9 +189,11 @@ class MaskRCNN:
             # ang: represents angle from center of screen to center of object in degrees
             cv2.putText(bgr_frame, "ang: {} deg".format(object_angle), (x + 5, y + 78), 0, 0.5, (255, 255, 255), 1) # height
 
-            # Marker at center of screen for testing purposes
-            # cv2.rectangle(bgr_frame, (screen_centerx-1, screen_centery-1), (screen_centerx+1, screen_centery+1), (255,0,0), 1)
+            # Draw marker at center of screen
+            cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 999, 1)
 
+            # Draw lines from center of screen to objects to confirm ang values
+            cv2.arrowedLine(bgr_frame, (int(screen_centerx), int(screen_centery)), (cx, cy), (255,0,0), 1)
 
 
 
