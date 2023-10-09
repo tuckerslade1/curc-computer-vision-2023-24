@@ -159,6 +159,7 @@ class MaskRCNN:
 
 
             # DRAW
+            
 
             # Draw background rectangles
             cv2.rectangle(bgr_frame, (x, y), (x + 118, y + 87), color, -1)
@@ -192,14 +193,7 @@ class MaskRCNN:
             # Draw marker at center of screen
             cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 999, 1)
 
-            # Draw lines from center of screen to objects to confirm ang values
+            # Draw vectors from center of screen to objects to help visualize angle values
             cv2.arrowedLine(bgr_frame, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0]/2,color[1]/2,color[2]/2), 1, cv2.LINE_AA)
 
-
-
         return bgr_frame
-
-
-
-
-

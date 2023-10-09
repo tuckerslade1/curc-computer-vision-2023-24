@@ -18,6 +18,21 @@ while True:
     bgr_frame = mrcnn.draw_object_mask(bgr_frame)
     mrcnn.draw_object_info(bgr_frame, depth_frame)
 
-    cv2.imshow("BGR FRAME", bgr_frame)
+    # Draw transparent objects onto bgr_frame
+
+    # Initialize blank mask image of same dimensions for drawing the objects
+    shapes = np.zeros_like(bgr_frame, np.uint8)
+
+    # Draw transparent shapes
+    cv2.rectangle(shapes, (5, 5), (100, 75), (255, 255, 255), cv2.FILLED)
+
+    # Generate output by blending image with shapes image, using the shapes
+    # images also as mask to limit the blending to those parts
+    out = bgr_frame.copy()
+    alpha = 0.5
+    mask = shapes.astype(bool)
+    out[mask] = cv2.addWeighted(bgr_frame, alpha, shapes, 1 - alpha, 0)[mask]
+
+    cv2.imshow("BGR FRAME", out)
 
     cv2.waitKey(1)
