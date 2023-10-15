@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import math
+from info_frames import *
 
 class MaskRCNN:
     def __init__(self):
@@ -159,39 +160,13 @@ class MaskRCNN:
 
 
             # DRAW
-            
-
-            # Draw background rectangles
-            cv2.rectangle(bgr_frame, (x, y), (x + 118, y + 87), color, -1)
-
-            # Draw outline of background rectangles
-            #cv2.rectangle(bgr_frame, (x, y), (x2, y2), color, 1)
-
-            # Draw lines through center of objects
-            # cv2.line(bgr_frame, (cx, y), (cx, y2), color, 1)
-            # cv2.line(bgr_frame, (x, cy), (x2, cy), color, 1)
-
-            # Draw (x,y) coordinates of corners
-            # cv2.putText(bgr_frame, str(x) + ", " + str(y), (x - 3, y - 3), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x2) + ", " + str(y), (x2 + 3, y - 3), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x) + ", " + str(y2), (x - 3, y2 + 15), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x2) + ", " + str(y2), (x2 + 3, y2 + 15), 0, 0.5, (255, 255, 255), 1)
-
-            # Draw object type and measurements
-
             class_name = self.classes[int(class_id)]
-            cv2.putText(bgr_frame, class_name.capitalize(), (x + 5, y + 18), 0, 0.5, (255, 255, 255), 2)
-            # d: represents measured distance to the center of object in cm
-            cv2.putText(bgr_frame, "d: {} cm".format(depth_mm / 10), (x + 5, y + 33), 0, 0.5, (255, 255, 255), 1) # distance
-            # w: represents calculated width of object in cm
-            cv2.putText(bgr_frame, "w: {} cm".format(width_mm / 10), (x + 5, y + 48), 0, 0.5, (255, 255, 255), 1) # width
-            # h: represents calculated height of object in cm
-            cv2.putText(bgr_frame, "h: {} cm".format(height_mm / 10), (x + 5, y + 63), 0, 0.5, (255, 255, 255), 1) # height
-            # ang: represents angle from center of screen to center of object in degrees
-            cv2.putText(bgr_frame, "ang: {} deg".format(object_angle), (x + 5, y + 78), 0, 0.5, (255, 255, 255), 1) # height
+
+            current_window = InfoWindow(bgr_frame, [x, y], class_name, [depth_mm/10, height_mm/10, width_mm/10, object_angle], color, 100)
+            current_window.display()
 
             # Draw marker at center of screen
-            cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 999, 1)
+            cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 9999, 1)
 
             # Draw vectors from center of screen to objects to help visualize angle values
             cv2.arrowedLine(bgr_frame, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0]/2,color[1]/2,color[2]/2), 1, cv2.LINE_AA)
