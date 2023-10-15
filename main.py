@@ -18,6 +18,7 @@ while True:
     bgr_frame = mrcnn.draw_object_mask(bgr_frame)
     mrcnn.draw_object_info(bgr_frame, depth_frame)
 
+
     cv2.imshow("BGR FRAME", bgr_frame)
 
     cv2.waitKey(1)

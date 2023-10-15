@@ -1,7 +1,8 @@
 # https://pysource.com/instance-segmentation-mask-rcnn-with-python-and-opencv
 import cv2
 import numpy as np
-import math
+from info_frames import *
+from calculate_object_measurements import *
 
 class MaskRCNN:
     def __init__(self):
@@ -95,10 +96,11 @@ class MaskRCNN:
             roi_copy = np.zeros_like(roi)
 
             for cnt in contours:
+                contour_alpha = 0.2
                 # cv2.f(roi, [cnt], (int(color[0]), int(color[1]), int(color[2])))
                 cv2.drawContours(roi, [cnt], - 1, (int(color[0]), int(color[1]), int(color[2])), 3)
                 cv2.fillPoly(roi_copy, [cnt], (int(color[0]), int(color[1]), int(color[2])))
-                roi = cv2.addWeighted(roi, 1, roi_copy, 0.5, 0.0)
+                roi = cv2.addWeighted(roi, 1, roi_copy, contour_alpha, 0.0)
                 bgr_frame[y: y2, x: x2] = roi
         return bgr_frame
 
@@ -115,91 +117,33 @@ class MaskRCNN:
             depth_mm = depth_frame[cy, cx]
 
 
-            # Calculate width of objects based on distance and angular diameter
-
-            fovx = 69 # Horizontal FOV in degrees of Intel RealSense d435i RGB camera
-            fovy = 42 # Vertical FOV in degrees of Intel RealSense d435i RGB camera
-
-            # Our current output resolution is 640x480, though this may change in the future
-            resx = 640
-            resy = 480
-
-            # Calculate the angular diameter of objects in degrees
-            angx = fovx * (x2 - x) / resx
-            angy = fovy * (y2 - y) / resy
-
-            # Calculate the actual width and height of objects in mm
-            # Given by formula d = 2*D*tan(delta/2),
-            # Where d is measurement of object, D is distance to object, and delta is angular diameter in radians
-            width_mm = math.floor(2 * depth_mm * math.tan(math.radians(angx)/2))
-            height_mm = math.floor(2 * depth_mm * math.tan(math.radians(angy)/2))
-
-            # Round angles to one decimal point
-            angx *= 10
-            angx = math.floor(angx)
-            angx /= 10
-
-            angy *= 10
-            angy = math.floor(angy)
-            angy /= 10
-
-            # Calculate angles from center of screen to center of objects
-            screen_centerx = resx / 2 # x-pos of screen center
-            screen_centery = resy / 2 # y-pos of screen center
-            object_angle = math.degrees(np.arctan2(resy - cy - screen_centery, cx - screen_centerx))
-
-            # Round angles to one decimal point
-            object_angle *= 10
-            object_angle = math.floor(object_angle)
-            object_angle /= 10
-
-            # Make output angles positive
-            if object_angle < 0:
-                object_angle += 360
+            # --CALCULATE--
+            width_mm = calculateWidth(depth_mm, x, x2)
+            
+            height_mm = calculateHeight(depth_mm, y, y2)
+            
+            object_angle = calculateAngle(cx, cy)
 
 
-            # DRAW
-
-            # Draw background rectangles
-            cv2.rectangle(bgr_frame, (x, y), (x + 118, y + 87), color, -1)
-
-            # Draw outline of background rectangles
-            #cv2.rectangle(bgr_frame, (x, y), (x2, y2), color, 1)
-
-            # Draw lines through center of objects
-            # cv2.line(bgr_frame, (cx, y), (cx, y2), color, 1)
-            # cv2.line(bgr_frame, (x, cy), (x2, cy), color, 1)
-
-            # Draw (x,y) coordinates of corners
-            # cv2.putText(bgr_frame, str(x) + ", " + str(y), (x - 3, y - 3), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x2) + ", " + str(y), (x2 + 3, y - 3), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x) + ", " + str(y2), (x - 3, y2 + 15), 0, 0.5, (255, 255, 255), 1)
-            # cv2.putText(bgr_frame, str(x2) + ", " + str(y2), (x2 + 3, y2 + 15), 0, 0.5, (255, 255, 255), 1)
-
-            # Draw object type and measurements
-
+            # --DRAW--
             class_name = self.classes[int(class_id)]
-            cv2.putText(bgr_frame, class_name.capitalize(), (x + 5, y + 18), 0, 0.5, (255, 255, 255), 2)
-            # d: represents measured distance to the center of object in cm
-            cv2.putText(bgr_frame, "d: {} cm".format(depth_mm / 10), (x + 5, y + 33), 0, 0.5, (255, 255, 255), 1) # distance
-            # w: represents calculated width of object in cm
-            cv2.putText(bgr_frame, "w: {} cm".format(width_mm / 10), (x + 5, y + 48), 0, 0.5, (255, 255, 255), 1) # width
-            # h: represents calculated height of object in cm
-            cv2.putText(bgr_frame, "h: {} cm".format(height_mm / 10), (x + 5, y + 63), 0, 0.5, (255, 255, 255), 1) # height
-            # ang: represents angle from center of screen to center of object in degrees
-            cv2.putText(bgr_frame, "ang: {} deg".format(object_angle), (x + 5, y + 78), 0, 0.5, (255, 255, 255), 1) # height
 
-            # Draw marker at center of screen
-            cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 999, 1)
+            # mask
+            shapes = np.zeros_like(bgr_frame, np.uint8)
 
-            # Draw lines from center of screen to objects to confirm ang values
-            cv2.arrowedLine(bgr_frame, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0]/2,color[1]/2,color[2]/2), 1, cv2.LINE_AA)
+            # display InfoWindows on mask
+            current_window = InfoWindow([x, y], class_name, [depth_mm/10, height_mm/10, width_mm/10, object_angle], color)
+            current_window.display(shapes)
 
+            # crosshair at screen center
+            cv2.drawMarker(shapes, (int(screen_centerx), int(screen_centery)), (50, 50, 50), cv2.MARKER_CROSS, 30, 2)
 
+            # vectors to object centers
+            #cv2.arrowedLine(shapes, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0],color[1],color[2]), 1, cv2.LINE_AA)
+
+            # blend mask with bgr_frame
+            alpha = 0.7
+            mask = shapes.astype(bool)
+            bgr_frame[mask] = cv2.addWeighted(bgr_frame, 1, shapes, alpha, 0.5)[mask]
 
         return bgr_frame
-
-
-
-
-
