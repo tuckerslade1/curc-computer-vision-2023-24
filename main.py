@@ -1,6 +1,7 @@
 import cv2
 from realsense_camera import *
 from mask_rcnn import *
+from minimap import *
 
 # Initialize camera
 rs = RealsenseCamera()
@@ -20,5 +21,7 @@ while True:
 
 
     cv2.imshow("BGR FRAME", bgr_frame)
+
+    showMinimap()
 
     cv2.waitKey(1)
