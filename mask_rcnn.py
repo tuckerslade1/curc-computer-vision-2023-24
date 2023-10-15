@@ -1,8 +1,8 @@
 # https://pysource.com/instance-segmentation-mask-rcnn-with-python-and-opencv
 import cv2
 import numpy as np
-import math
 from info_frames import *
+from calculate_object_measurements import *
 
 class MaskRCNN:
     def __init__(self):
@@ -115,49 +115,11 @@ class MaskRCNN:
 
             depth_mm = depth_frame[cy, cx]
 
-
-            # Calculate width of objects based on distance and angular diameter
-
-            fovx = 69 # Horizontal FOV in degrees of Intel RealSense d435i RGB camera
-            fovy = 42 # Vertical FOV in degrees of Intel RealSense d435i RGB camera
-
-            # Our current output resolution is 640x480, though this may change in the future
-            resx = 640
-            resy = 480
-
-            # Calculate the angular diameter of objects in degrees
-            angx = fovx * (x2 - x) / resx
-            angy = fovy * (y2 - y) / resy
-
-            # Calculate the actual width and height of objects in mm
-            # Given by formula d = 2*D*tan(delta/2),
-            # Where d is measurement of object, D is distance to object, and delta is angular diameter in radians
-            width_mm = math.floor(2 * depth_mm * math.tan(math.radians(angx)/2))
-            height_mm = math.floor(2 * depth_mm * math.tan(math.radians(angy)/2))
-
-            # Round angles to one decimal point
-            angx *= 10
-            angx = math.floor(angx)
-            angx /= 10
-
-            angy *= 10
-            angy = math.floor(angy)
-            angy /= 10
-
-            # Calculate angles from center of screen to center of objects
-            screen_centerx = resx / 2 # x-pos of screen center
-            screen_centery = resy / 2 # y-pos of screen center
-            object_angle = math.degrees(np.arctan2(resy - cy - screen_centery, cx - screen_centerx))
-
-            # Round angles to one decimal point
-            object_angle *= 10
-            object_angle = math.floor(object_angle)
-            object_angle /= 10
-
-            # Make output angles positive
-            if object_angle < 0:
-                object_angle += 360
-
+            width_mm = calculateWidth(depth_mm, x, x2)
+            
+            height_mm = calculateHeight(depth_mm, y, y2)
+            
+            object_angle = calculateAngle(cx, cy)
 
             # DRAW
             class_name = self.classes[int(class_id)]
