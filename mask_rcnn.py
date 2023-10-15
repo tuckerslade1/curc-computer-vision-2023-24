@@ -115,22 +115,34 @@ class MaskRCNN:
 
             depth_mm = depth_frame[cy, cx]
 
+
+            # --CALCULATE--
             width_mm = calculateWidth(depth_mm, x, x2)
             
             height_mm = calculateHeight(depth_mm, y, y2)
             
             object_angle = calculateAngle(cx, cy)
 
-            # DRAW
+
+            # --DRAW--
             class_name = self.classes[int(class_id)]
 
-            current_window = InfoWindow(bgr_frame, [x, y], class_name, [depth_mm/10, height_mm/10, width_mm/10, object_angle], color, 100)
+            # mask
+            shapes = np.zeros_like(bgr_frame, np.uint8)
+
+            # display InfoWindows on mask
+            current_window = InfoWindow(shapes, [x, y], class_name, [depth_mm/10, height_mm/10, width_mm/10, object_angle], color, 100)
             current_window.display()
 
-            # Draw marker at center of screen
+            # blend mask with bgr_frame
+            alpha = 0.5
+            mask = shapes.astype(bool)
+            bgr_frame[mask] = cv2.addWeighted(bgr_frame, alpha, shapes, 1 - alpha, 0)[mask]
+
+            # crosshair at screen center
             cv2.drawMarker(bgr_frame, (int(screen_centerx), int(screen_centery)), (0,0,255), cv2.MARKER_CROSS, 9999, 1)
 
-            # Draw vectors from center of screen to objects to help visualize angle values
+            # vectors to object centers
             cv2.arrowedLine(bgr_frame, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0]/2,color[1]/2,color[2]/2), 1, cv2.LINE_AA)
 
         return bgr_frame

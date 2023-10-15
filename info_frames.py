@@ -16,9 +16,12 @@ class InfoWindow:
         self.width = 118
         self.height = 87
         
-    # draw method for standard object InfoWindows
+    # display transparent InfoWindows
     def display(self):
         
+        # blank mask
+        shapes = np.zeros_like(self.frame, np.uint8)
+
         # window background
         cv2.rectangle(self.frame, self.position, (self.position[0] + self.width, self.position[1] + self.height), self.color, -1)
 
