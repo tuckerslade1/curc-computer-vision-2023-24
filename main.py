@@ -7,8 +7,11 @@ from minimap import *
 rs = RealsenseCamera()
 mrcnn = MaskRCNN()
 
+
+
 while True:
     
+    #--bgr_frame--
     # Get frame in real time from RealSense camera
     ret, bgr_frame, depth_frame = rs.get_frame_stream()
 
@@ -19,9 +22,13 @@ while True:
     bgr_frame = mrcnn.draw_object_mask(bgr_frame)
     mrcnn.draw_object_info(bgr_frame, depth_frame)
 
+    # Show bgr_frame
+    cv2.imshow("camera", bgr_frame)
 
-    cv2.imshow("BGR FRAME", bgr_frame)
 
-    showMinimap()
+    #--minimap_frame--
+    minimap_frame = mrcnn.drawMinimap(depth_frame)
+
+    cv2.imshow("minimap", minimap_frame)
 
     cv2.waitKey(1)

@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from info_frames import *
 from calculate_object_measurements import *
+from minimap import *
 
 class MaskRCNN:
     def __init__(self):
@@ -133,17 +134,39 @@ class MaskRCNN:
 
             # display InfoWindows on mask
             current_window = InfoWindow([x, y], class_name, [depth_mm/10, height_mm/10, width_mm/10, object_angle], color)
-            current_window.display(shapes)
+            current_window.display(bgr_frame)
 
             # crosshair at screen center
             cv2.drawMarker(shapes, (int(screen_centerx), int(screen_centery)), (50, 50, 50), cv2.MARKER_CROSS, 30, 2)
 
             # vectors to object centers
-            #cv2.arrowedLine(shapes, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0],color[1],color[2]), 1, cv2.LINE_AA)
+            cv2.arrowedLine(shapes, (int(screen_centerx), int(screen_centery)), (cx, cy), (color[0],color[1],color[2]), 1, cv2.LINE_AA)
 
             # blend mask with bgr_frame
-            alpha = 0.7
+            alpha = 1
             mask = shapes.astype(bool)
-            bgr_frame[mask] = cv2.addWeighted(bgr_frame, 1, shapes, alpha, 0.5)[mask]
+            bgr_frame[mask] = cv2.addWeighted(bgr_frame, 1, shapes, alpha, 0)[mask]
 
         return bgr_frame
+
+    def drawMinimap(self, depth_frame):
+        # draw background
+        minimap_frame = np.zeros((window_height, window_width, 3), dtype=np.uint8)
+        minimap_frame = drawMinimapBackground(minimap_frame)
+
+        # loop through the detection
+        for box, class_id, obj_center in zip(self.obj_boxes, self.obj_classes, self.obj_centers):
+            x, y, x2, y2 = box
+
+            color = self.colors[int(class_id)]
+            color = (int(color[0]), int(color[1]), int(color[2]))
+
+            cx, cy = obj_center
+
+            depth_mm = depth_frame[cy, cx]
+
+            # add objects to minimap
+            minimap_object_location = (int((cx/640) * window_width), int((cx/480)*window_height))
+            cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
+
+        return minimap_frame
