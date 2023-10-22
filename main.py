@@ -1,3 +1,4 @@
+# main.py
 import cv2
 from realsense_camera import *
 from mask_rcnn import *
@@ -26,9 +27,9 @@ while True:
     cv2.imshow("camera", bgr_frame)
 
 
-    #--minimap_frame--
-    minimap_frame = mrcnn.drawMinimap(depth_frame)
+    #--minimaps--
+    flat_minimap_frame = mrcnn.drawMinimap(depth_frame)
 
-    cv2.imshow("minimap", minimap_frame)
+    cv2.imshow("flat minimap", flat_minimap_frame)
 
     cv2.waitKey(1)
