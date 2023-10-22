@@ -1,3 +1,4 @@
+# realsense_camera.py
 #https://pysource.com
 import pyrealsense2 as rs
 import numpy as np
@@ -66,6 +67,3 @@ class RealsenseCamera:
         # Stack both images horizontally
         
         #images = np.hstack((color_image, depth_colormap))
-
-
-
