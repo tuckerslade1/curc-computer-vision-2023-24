@@ -160,11 +160,11 @@ class MaskRCNN:
 
         # columns
         for x in range(0, window_width, grid_size):
-            cv2.line(minimap_frame, (x, 0), (x, window_height), (255,255,255), 1)
+            cv2.line(minimap_frame, (x, 0), (x, window_height), (20,20,20), 1)
         
         # rows
         for y in range(0, window_height, grid_size):
-            cv2.line(minimap_frame, (0, y), (window_width, y), (255,255,255), 1)
+            cv2.line(minimap_frame, (0, y), (window_width, y), (20,20,20), 1)
 
         # origin
         cv2.circle(minimap_frame, (int(window_width/2), int(window_height/2)), 3, (0,0,255), -1)
@@ -183,7 +183,7 @@ class MaskRCNN:
             # add objects to minimap
             minimap_object_location = (int((cx/640) * window_width), int((cy/480)*window_height))
             cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
-            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0], minimap_object_location[1]+10), 0, 0.5, (255, 255, 255), 1)
+            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0]+10, minimap_object_location[1]), 0, 0.5, (255, 255, 255), 1)
 
         return minimap_frame
     
@@ -199,11 +199,11 @@ class MaskRCNN:
 
         # columns
         for x in range(0, window_width, grid_size):
-            cv2.line(minimap_frame, (x, 0), (x, window_height), (255,255,255), 1)
+            cv2.line(minimap_frame, (x, 0), (x, window_height), (20,20,20), 1)
         
         # rows
         for y in range(0, window_height, grid_size):
-            cv2.line(minimap_frame, (0, y), (window_width, y), (255,255,255), 1)
+            cv2.line(minimap_frame, (0, y), (window_width, y), (20,20,20), 1)
 
         # origin
         cv2.circle(minimap_frame, (int(window_width/2), window_height-3), 3, (0,0,255), -1)
@@ -222,6 +222,6 @@ class MaskRCNN:
             # add objects to minimap
             minimap_object_location = (int((cx/640) * window_width), window_height - int((depth_mm/10) / (max_depth/window_height)))
             cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
-            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0], minimap_object_location[1]+10), 0, 0.5, (255, 255, 255), 1)
+            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0]+10, minimap_object_location[1]), 0, 0.5, (255, 255, 255), 1)
 
         return minimap_frame
