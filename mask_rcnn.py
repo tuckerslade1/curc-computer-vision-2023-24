@@ -192,7 +192,7 @@ class MaskRCNN:
         window_width = 400
         window_height = 200
         grid_size = 20
-        max_depth = 200 # cm
+        max_depth = 150 # cm
 
         # draw background
         minimap_frame = np.zeros((window_height, window_width, 3), dtype=np.uint8)
