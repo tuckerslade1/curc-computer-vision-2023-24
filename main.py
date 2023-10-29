@@ -28,8 +28,14 @@ while True:
 
 
     #--minimaps--
-    flat_minimap_frame = mrcnn.drawMinimap(depth_frame)
+    flat_minimap_frame = mrcnn.drawFlatMinimap(depth_frame)
+    cv2.imshow("flat view (x-y)", flat_minimap_frame)
 
-    cv2.imshow("flat minimap", flat_minimap_frame)
+    birdseye_minimap_frame = mrcnn.drawBirdseyeMinimap(depth_frame)
+    cv2.imshow("birdseye view (x-z)", birdseye_minimap_frame)
+
+
+
+
 
     cv2.waitKey(1)

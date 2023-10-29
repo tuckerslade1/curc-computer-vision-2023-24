@@ -150,10 +150,61 @@ class MaskRCNN:
 
         return bgr_frame
 
-    def drawMinimap(self, depth_frame):
+    def drawFlatMinimap(self, depth_frame):
+
+        window_width = 400
+        window_height = 200
+        grid_size = 20
+
         # draw background
         minimap_frame = np.zeros((window_height, window_width, 3), dtype=np.uint8)
-        minimap_frame = drawMinimapBackground(minimap_frame)
+
+        # columns
+        for x in range(0, window_width, grid_size):
+            cv2.line(minimap_frame, (x, 0), (x, window_height), (255,255,255), 1)
+        
+        # rows
+        for y in range(0, window_height, grid_size):
+            cv2.line(minimap_frame, (0, y), (window_width, y), (255,255,255), 1)
+
+        # origin
+        cv2.circle(minimap_frame, (int(window_width/2), int(window_height/2)), 3, (0,0,255), -1)
+
+        # loop through the detection
+        for box, class_id, obj_center in zip(self.obj_boxes, self.obj_classes, self.obj_centers):
+            x, y, x2, y2 = box
+
+            color = self.colors[int(class_id)]
+            color = (int(color[0]), int(color[1]), int(color[2]))
+
+            cx, cy = obj_center
+
+            # add objects to minimap
+            minimap_object_location = (int((cx/640) * window_width), int((cy/480)*window_height))
+            cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
+
+        return minimap_frame
+    
+    def drawBirdseyeMinimap(self, depth_frame):
+        
+        window_width = 400
+        window_height = 200
+        grid_size = 20
+        max_depth = 200 # cm
+
+        # draw background
+        minimap_frame = np.zeros((window_height, window_width, 3), dtype=np.uint8)
+
+        # columns
+        for x in range(0, window_width, grid_size):
+            cv2.line(minimap_frame, (x, 0), (x, window_height), (255,255,255), 1)
+        
+        # rows
+        for y in range(0, window_height, grid_size):
+            cv2.line(minimap_frame, (0, y), (window_width, y), (255,255,255), 1)
+
+        # origin
+        cv2.circle(minimap_frame, (int(window_width/2), window_height-3), 3, (0,0,255), -1)
 
         # loop through the detection
         for box, class_id, obj_center in zip(self.obj_boxes, self.obj_classes, self.obj_centers):
@@ -167,7 +218,7 @@ class MaskRCNN:
             depth_mm = depth_frame[cy, cx]
 
             # add objects to minimap
-            minimap_object_location = (int((cx/640) * window_width), int((cx/480)*window_height))
+            minimap_object_location = (int((cx/640) * window_width), window_height - int((depth_mm/10) / (max_depth/window_height)))
             cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
 
         return minimap_frame
