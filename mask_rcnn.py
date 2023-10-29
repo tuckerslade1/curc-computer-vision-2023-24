@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from info_frames import *
 from calculate_object_measurements import *
-from minimap import *
 
 class MaskRCNN:
     def __init__(self):

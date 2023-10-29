@@ -2,7 +2,6 @@
 import cv2
 from realsense_camera import *
 from mask_rcnn import *
-from minimap import *
 
 # Initialize camera
 rs = RealsenseCamera()
