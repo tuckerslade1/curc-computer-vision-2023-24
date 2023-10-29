@@ -178,9 +178,12 @@ class MaskRCNN:
 
             cx, cy = obj_center
 
+            depth_mm = depth_frame[cy, cx]
+
             # add objects to minimap
             minimap_object_location = (int((cx/640) * window_width), int((cy/480)*window_height))
             cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
+            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0], minimap_object_location[1]+10), 0, 0.5, (255, 255, 255), 1)
 
         return minimap_frame
     
@@ -219,5 +222,6 @@ class MaskRCNN:
             # add objects to minimap
             minimap_object_location = (int((cx/640) * window_width), window_height - int((depth_mm/10) / (max_depth/window_height)))
             cv2.circle(minimap_frame, minimap_object_location, 5, color, -1)
+            cv2.putText(minimap_frame, f'({cx}, {cy}, {depth_mm/10})', (minimap_object_location[0], minimap_object_location[1]+10), 0, 0.5, (255, 255, 255), 1)
 
         return minimap_frame
