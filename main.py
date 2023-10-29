@@ -35,6 +35,12 @@ while True:
 
 
 
+    key = cv2.waitKey(0) & 0xFF
 
+    # if the 'q' key is pressed, exit from loop
+    if key == ord("q"):
+        break
 
-    cv2.waitKey(1)
+    #if the 'n' key is pressed, go to next frame
+    if key == ord("n"):
+        continue
