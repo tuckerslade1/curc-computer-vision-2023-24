@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.optimize import minimize
 
+#TODO: grab position data from camera output
+
 def spherical_to_cartesian(r, azimuth, elevation):
     """
     Convert spherical coordinates to cartesian.
