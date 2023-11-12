@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-#TODO: grab position data from camera output
+#TODO: grab position and angle data from camera output, use IMU data to improve accuracy, support for more than 2 objects (multilateralation), error modeling to account for noise in real world data, constraint enforcement if objects are a known distance apart
 
 def spherical_to_cartesian(r, azimuth, elevation):
     """
